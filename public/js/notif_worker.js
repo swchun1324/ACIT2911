@@ -2,7 +2,7 @@
 /* eslint-disable indent */
 /* eslint-disable quotes */
 const cacheName = "notifCache";
-const cacheURLS = ["/images/reply.png", "/images/speech-bubble.png"];
+const cacheURLS = "/api/notifs";
 
 self.addEventListener("install", event => {
     // Perform install steps
@@ -10,35 +10,47 @@ self.addEventListener("install", event => {
         caches
             .open(cacheName)
             .then(cache => {
-                console.log("Opened cache");
-                return cache.addAll(cacheURLS);
+                //console.log("Opened cache");
+
+                return cache.add(cacheURLS);
             })
             .catch(error => {
-                console.log(error);
+                return console.log(error);
             })
     );
 });
 
 /*
-self.addEventListener("fetch", function(event) {
-    event.respondWith(
-        caches.match(event.request).then(function(response) {
-            // Cache hit - return response
-            if (response) {
-                console.log(response);
-                return response;
-            }
-            console.log(event.request)
-            return fetch(event.request);
-        })
-    );
+self.addEventListener("fetch", event => {
+    if (event.request.destination === "document") {
+        console.log(event.request);
+        event.waitUntil(
+            caches.open(cacheName).then(async cache => {
+                //console.log("Opened cache");
+                await cache.delete(cacheURLS);
+                //console.log(cleared);
+                await cache.add(cacheURLS);
+                let pulled = await cache.match(cacheURLS);
+                console.log(await pulled.json());
+            })
+        );
+    }
 });
 */
 
 function genNotif(event) {
     return new Promise((resolve, reject) => {
-        let { body, title } = event.data.json();
-        self.registration.showNotification(title, { body }).then(resolve);
+        console.log(event.data)
+        let data = event.data.text();
+        console.log(data);
+        self.registration
+            .showNotification(data.title, {
+                icon: data.icon,
+                body: data.body,
+                data: data.url,
+                tag: data.title
+            })
+            .then(resolve);
     });
 }
 
@@ -46,3 +58,14 @@ self.addEventListener("push", event => {
     console.log(event);
     event.waitUntil(genNotif(event));
 });
+
+self.onnotificationclick = async function(event) {
+    let url = event.notification.data;
+    console.log("Clicked:", event.notification.tag);
+    event.notification.close();
+
+    let allClients = await clients.matchAll({ type: "window" });
+    console.log(allClients[0]);
+
+    event.waitUntil(allClients[0].navigate(url));
+};

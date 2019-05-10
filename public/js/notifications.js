@@ -2,6 +2,35 @@
 /* eslint-disable indent */
 /* eslint-disable quotes */
 
+var getPublicKey = async () => {
+    let key = await fetch("/api/vapidPublicKey", {
+        method: "GET"
+    }).then(response => {
+        return response.clone().json();
+    });
+    let vapidPublicKey = await urlBase64ToUint8Array(key.key);
+    //console.log(vapidPublicKey);
+
+    return vapidPublicKey;
+};
+var vapidPublicKey = getPublicKey();
+//console.log(vapidPublicKey);
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, "+")
+        .replace(/_/g, "/");
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
 function registerWorker() {
     return navigator.serviceWorker
         .register("/js/notif_worker.js", { scope: "/" })
@@ -32,14 +61,36 @@ function registerWorker() {
         });
 }
 
-function subscribePush(registration) {
-    
+async function openPushSubscription() {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+        //window.addEventListener("load", registerWorker());
+        if (navigator.serviceWorker.controller) {
+            console.log("Working: ", navigator.serviceWorker.controller);
+        }
+        let register = await registerWorker();
+        let vapidKey = await vapidPublicKey;
 
+        let PushSubscription = await register.pushManager.getSubscription();
+        if (PushSubscription === null) {
+            PushSubscription = await register.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: vapidKey
+            });
+        }
+
+        console.log(JSON.stringify(PushSubscription));
+        return fetch("/api/pushsubscribe", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify(PushSubscription)
+        });
+    }
 }
 
-if ("serviceWorker" in navigator && "PushManager" in window) {
-    window.addEventListener("load", registerWorker());
-}
+openPushSubscription();
 
 /*
 if (Notification.permission !== "denied") {

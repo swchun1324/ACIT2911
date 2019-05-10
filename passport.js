@@ -1,6 +1,8 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const utils = require("./utils");
+const watcher = require("./changeStream");
+
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
@@ -48,8 +50,8 @@ router.post(
         failureRedirect: "/login"
     }),
     (req, res) => {
-        //console.log(req)
         res.redirect("/");
+        watcher.open(req.user._id);
     }
 );
 

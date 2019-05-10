@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{> header}}
+
+<body>
+    {{> menu}}
+    <div id="message_container">
+        <div class="register_add">
+            <h1>{{heading}}</h1>
+            Filter: <select id="search_filter">
+                <option value="option1">threads/replies</option>
+                <option value="option2">replies</option>
+                <option value="option3">threads</option>
+            </select>
+            {{#if isAuthenticated}}
+            <p><button><a href="/new_post">Add Post</a></button></p>
+            {{else}}
+            <p>
+                <a href="/registration" class="reg_link">Register a new account to start posting!</a>
+            </p>
+            {{/if}}
+        </div>
+        <hr>
+        
+        <div id="option1" class="search_posts">
+        <ul class="message_list">
+            {{#each thread_reply}}
+            <li><a href="/thread/{{_id}}">{{title}}</a>
+                <p class="poster">Posted by: <a href="/user/{{user_id}}" id="f_username">{{username}}</a> on {{date}}
+                </p>
+                <hr>
+            </li>
+            {{/each}}
+        </ul>
+        </div>
+
+        <div id="option2" class="search_posts">
+        <ul class="message_list">
+            {{#each reply}}
+            <li><a href="/thread/{{thread_id}}">{{message}}</a>
+                <p class="poster">Posted by: <a href="/user/{{user_id}}" id="f_username">{{username}}</a> on {{date}}</p>
+                <hr>
+            </li>
+            {{/each}}
+        </ul>
+        </div>
+
+        <div id="option3" class="search_posts">
+        <ul class="message_list">
+            {{#each thread}}
+            <li><a href="/thread/{{_id}}">{{title}}</a>
+                <p class="poster">Posted by: <a href="/user/{{user_id}}" id="f_username">{{username}}</a> on {{date}}</p>
+                <hr> 
+            </li>
+            {{/each}}
+
+    </div>
+</body>
+
+{{> footer}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="js/search.js"></script>
+
+</html>
