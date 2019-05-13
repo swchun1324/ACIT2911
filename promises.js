@@ -1,5 +1,5 @@
 const utils = require('./utils.js');
-const _ = require("lodash");
+//const _ = require("lodash");
 
 // Populates message board page with the titles of each
 // message in the database
@@ -26,19 +26,41 @@ var messagePromise = () => {
 };
 
 // Retrieves threads/replies with keywords for search
-var searchPromise = (param_keywords, param_type) => {
+var searchPromise = (param_keywords, param_type, query_type) => {
     return new Promise((resolve, reject) => {
         var db = utils.getDb();
 
         var re = new RegExp(`.*${param_keywords}.*`, 'i');
 
-        var query = {
-            $or: [
-                {message: re},
-                {title: re}
-            ],
-            type: param_type
-        };
+        var query = 'thread';
+
+        if (query_type == 'thread_reply') {
+            query = {
+                $or: [
+                    {message: re},
+                    {title: re}
+                ],
+                type: param_type
+            };
+        }
+
+        if (query_type == 'thread') {
+            query = { 
+                title: re,
+                thread_id: null
+            };
+        }
+
+        if (query_type == 'reply') {
+            query = {
+                $and: [
+                    {type: 'reply'},
+                    {message: re}
+                ]
+            };
+        }
+
+        
         
         db.collection('messages').find(query).toArray((err, result) => {
             if (err) {
@@ -105,6 +127,25 @@ var userPromise = param_id => {
     });
 };
 
+var updateUserPromise = (param_id, item) => {
+    return new Promise((resolve, reject) => {
+        var db = utils.getDb();
+        var ObjectId = utils.getObjectId();
+
+        var query = { _id: ObjectId(param_id) };
+        var update = { $push: 
+            { notifications: item }
+        };
+
+        db.collection("users").findOneAndUpdate(query, update, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(result);
+        });
+    });
+};
+
 // Retrieves all threads of a user
 var userthreadPromise = param_username => {
     return new Promise((resolve, reject) => {
@@ -149,5 +190,6 @@ module.exports = {
     userPromise: userPromise,
     userthreadPromise: userthreadPromise,
     dmPromise: dmPromise,
-    searchPromise: searchPromise
+    searchPromise: searchPromise,
+    updateUserPromise: updateUserPromise
 };

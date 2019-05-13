@@ -11,12 +11,13 @@ const pass = require("./passport.js");
 const forum = require("./forum.js");
 const promises = require("./promises.js");
 const dms = require("./messaging.js");
-
+const watcher = require("./changeStream.js");
 
 const app = express();
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
+const webpush = require("web-push");
 
 var sslOptions = {
     key: fs.readFileSync(path.resolve("./localhost-key.pem")),
@@ -34,6 +35,19 @@ var server = app.listen(port, () => {
 });
 */
 
+const vapidKeys = {
+    publicKey: "BKyb0KGvc8HKy4A-RDJJ0_tZKUiXMlVcmBBhYSEz9U08Nc0xAuvA6uWv7ANEyJm6o0voRItkHhz5y0X0bEAw4Wo",
+    privateKey: "LUZkyfprh3w6EHFNL9RrTLCAjLNp7rnnGbj--h_JsWc"
+}
+app.locals.clientVapidKey = vapidKeys.publicKey;
+//console.log(app.locals.clientVapidKey);
+
+webpush.setVapidDetails(
+    "http://quiet-brook-91223.herokuapp.com/",
+    vapidKeys.publicKey,
+    vapidKeys.privateKey
+);
+
 hbs.registerPartials(__dirname + "/views/partials");
 
 app.use(function(req, res, next) {
@@ -47,6 +61,7 @@ app.use(
         extended: true
     })
 );
+app.use(bodyParser.json());
 
 hbs.registerHelper("port", () => {
     return port;
@@ -90,8 +105,12 @@ app.get("/login", (request, response) => {
 
 // Logout Page
 app.get("/logout", (request, response) => {
+    var user_id = request.user._id;
+
     request.logout();
+
     request.session.destroy(() => {
+        // watcher.close(user_id);
         response.clearCookie("connect.sid");
         response.redirect("/");
     });
@@ -122,8 +141,21 @@ app.get("/search", async (request, response) => {
         return;
     }
 
-    var threads = await promises.searchPromise(request.query.keyword, "thread");
-    var replies = await promises.searchPromise(request.query.keyword, "reply");
+    var threads_replies = await promises.searchPromise(
+        request.query.keyword,
+        "thread",
+        "thread_reply"
+    );
+    var replies = await promises.searchPromise(
+        request.query.keyword,
+        "reply",
+        "reply"
+    );
+    var threads = await promises.searchPromise(
+        request.query.keyword,
+        "thread",
+        "thread"
+    );
 
     var replies_thread_ids = Object.keys(_.groupBy(replies, "thread_id"));
 
@@ -131,7 +163,7 @@ app.get("/search", async (request, response) => {
 
     for (i = 0; i < replies_thread_ids.length; i++) {
         for (j = 0; j < replies.length; j++) {
-            if (replies[j]._id == replies_thread_ids[i]) {
+            if (replies[j].thread_id == replies_thread_ids[i]) {
                 exist_flag = true;
                 break;
             }
@@ -140,15 +172,17 @@ app.get("/search", async (request, response) => {
             var queried_thread = await promises.threadPromise(
                 replies_thread_ids[i]
             );
-            threads.push(queried_thread);
+            threads_replies.push(queried_thread);
         }
         exist_flag = false;
     }
 
-    response.render("forum.hbs", {
+    response.render("search.hbs", {
         title: "Search",
         heading: `Search: ${request.query.keyword}`,
-        message: threads
+        thread_reply: threads_replies,
+        thread: threads,
+        reply: replies
     });
 });
 
@@ -276,6 +310,7 @@ app.get("/dms", checkAuthentication, async (request, response) => {
     });
 });
 
+// display endpoint for messages in inbox
 app.get("/dms/:id", checkAuthentication, async (request, response) => {
     var dms = await promises.dmPromise(request.user._id.toString());
     var username = await promises.userPromise(request.params.id);
@@ -296,6 +331,73 @@ app.get("/dms/:id", checkAuthentication, async (request, response) => {
         dms: dmsByUsers[request.params.id],
         dmers_id: request.params.id
     });
+});
+
+app.get("/api/notifs", async (request, response) => {
+    if (request.isAuthenticated()) {
+        var dms = await promises.dmPromise(request.user._id.toString());
+
+        // groups array elements into {otherUser_id:[messages]} objects
+        let dmsByUsers = _.groupBy(
+            dms.map(message => {
+                message.users = message.users.filter(user => {
+                    return user !== request.user._id.toString();
+                })[0];
+                return message;
+            }),
+            "users"
+        );
+
+        response.send(dmsByUsers);
+    } else {
+        response.send({});
+    }
+});
+
+app.get("/api/vapidPublicKey", (request, response) => {
+    response.send({ key: app.locals.clientVapidKey });
+});
+
+app.post("/api/push", checkAuthentication, async (request, response) => {
+    console.log(request);
+    let title = request.body.notification.title;
+    let icon = "/images/reply.png";
+    let body = request.body.notification.body;
+    let url = request.body.notification.url;
+
+    let payload = {
+        title,
+        icon,
+        body,
+        url
+    };
+
+    let pushed = await webpush.sendNotification(
+        app.locals.pushSubscription,
+        payload
+    );
+
+    response.send({
+        status: pushed.statusCode,
+        body: pushed.body
+    });
+});
+
+app.get("/api/getsubscribe", (request, response) => {
+    //console.log(request)
+    let subscription = app.locals.pushSubscription;
+    //console.log(subscription);
+    response.send({
+        status: 200,
+        body: { subscription, vapidKeys }
+    });
+});
+
+app.post("/api/pushsubscribe", checkAuthentication, (request, response) => {
+    app.locals.pushSubscription = request.body;
+    //console.log(app.locals.pushSubscription);
+
+    response.send({ status: 200 });
 });
 
 exports.closeServer = function() {
