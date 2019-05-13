@@ -1,2 +1,3 @@
 language: node js
-node_js:-"stable"
+node_js:
+  - "11.12.0"
