@@ -1,2 +1,2 @@
 language: node js
-node_js:-"stable:
+node_js:-"stable"
