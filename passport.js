@@ -51,7 +51,7 @@ router.post(
     }),
     (req, res) => {
         res.redirect("/");
-        watcher.open(req.user._id);
+        // watcher.open(req.user._id);
     }
 );
 

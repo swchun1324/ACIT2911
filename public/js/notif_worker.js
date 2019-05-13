@@ -40,22 +40,23 @@ self.addEventListener("fetch", event => {
 
 function genNotif(event) {
     return new Promise((resolve, reject) => {
-        console.log(event.data)
-        let data = event.data.text();
-        console.log(data);
+        //console.log(event.data)
+        let data = event.data.json();
+        //console.log(data);
         self.registration
             .showNotification(data.title, {
                 icon: data.icon,
                 body: data.body,
                 data: data.url,
-                tag: data.title
+                tag: data.tag,
+                renotify: true
             })
             .then(resolve);
     });
 }
 
 self.addEventListener("push", event => {
-    console.log(event);
+    //console.log(event);
     event.waitUntil(genNotif(event));
 });
 

@@ -45,7 +45,10 @@ var searchPromise = (param_keywords, param_type, query_type) => {
         }
 
         if (query_type == 'thread') {
-            query = { title: re };
+            query = { 
+                title: re,
+                thread_id: null
+            };
         }
 
         if (query_type == 'reply') {

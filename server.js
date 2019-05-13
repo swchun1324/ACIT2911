@@ -35,7 +35,10 @@ var server = app.listen(port, () => {
 });
 */
 
-const vapidKeys = webpush.generateVAPIDKeys();
+const vapidKeys = {
+    publicKey: "BKyb0KGvc8HKy4A-RDJJ0_tZKUiXMlVcmBBhYSEz9U08Nc0xAuvA6uWv7ANEyJm6o0voRItkHhz5y0X0bEAw4Wo",
+    privateKey: "LUZkyfprh3w6EHFNL9RrTLCAjLNp7rnnGbj--h_JsWc"
+}
 app.locals.clientVapidKey = vapidKeys.publicKey;
 //console.log(app.locals.clientVapidKey);
 
@@ -103,11 +106,11 @@ app.get("/login", (request, response) => {
 // Logout Page
 app.get("/logout", (request, response) => {
     var user_id = request.user._id;
-    
+
     request.logout();
 
     request.session.destroy(() => {
-        watcher.close(user_id);
+        // watcher.close(user_id);
         response.clearCookie("connect.sid");
         response.redirect("/");
     });
@@ -138,9 +141,21 @@ app.get("/search", async (request, response) => {
         return;
     }
 
-    var threads_replies = await promises.searchPromise(request.query.keyword, "thread", 'thread_reply');
-    var replies = await promises.searchPromise(request.query.keyword, "reply", 'reply');
-    var threads = await promises.searchPromise(request.query.keyword, "thread", 'thread');
+    var threads_replies = await promises.searchPromise(
+        request.query.keyword,
+        "thread",
+        "thread_reply"
+    );
+    var replies = await promises.searchPromise(
+        request.query.keyword,
+        "reply",
+        "reply"
+    );
+    var threads = await promises.searchPromise(
+        request.query.keyword,
+        "thread",
+        "thread"
+    );
 
     var replies_thread_ids = Object.keys(_.groupBy(replies, "thread_id"));
 
@@ -344,12 +359,12 @@ app.get("/api/vapidPublicKey", (request, response) => {
 });
 
 app.post("/api/push", checkAuthentication, async (request, response) => {
-    console.log(request)
+    console.log(request);
     let title = request.body.notification.title;
     let icon = "/images/reply.png";
     let body = request.body.notification.body;
     let url = request.body.notification.url;
-    
+
     let payload = {
         title,
         icon,
@@ -365,6 +380,16 @@ app.post("/api/push", checkAuthentication, async (request, response) => {
     response.send({
         status: pushed.statusCode,
         body: pushed.body
+    });
+});
+
+app.get("/api/getsubscribe", (request, response) => {
+    //console.log(request)
+    let subscription = app.locals.pushSubscription;
+    //console.log(subscription);
+    response.send({
+        status: 200,
+        body: { subscription, vapidKeys }
     });
 });
 
