@@ -90,6 +90,24 @@ async function openPushSubscription() {
     }
 }
 
+async function closePushSubscription() {
+    navigator.serviceWorker.ready.then(function(reg) {
+        reg.pushManager.getSubscription().then(function(subscription) {
+            subscription
+                .unsubscribe()
+                .then(function(successful) {
+                    // You've successfully unsubscribed
+                    console.log("Unsubscribed", successful);
+                })
+                .catch(function(e) {
+                    // Unsubscription failed
+                    console.log("Unsubscribe failed:", e);
+                });
+        });
+    });
+}
+
+//closePushSubscription();
 openPushSubscription();
 
 /*
