@@ -234,13 +234,7 @@ a {
 
 }
 
-.delete2 , #edit_button {
-    display:inline-block;
-    margin-top: 15px;
-    width: 100px;
-  
-    
-    }
+
 #thread_container {
     width: 80%;
     margin: auto;
@@ -268,25 +262,39 @@ a {
 }
 
 .delete2{
-    width: 80px;
+    width: 60px;
     background-color: #C83B1B;
     color: white;
     border-radius: 12px;
+   
 }
 
+.padding2{
+    display: flex;
+}
+
+.box1{
+    flex: 0 0 65%;
+}
+
+.box2{
+    flex: 1;
+}
 #edit_button{
-    transform: translate(75px, -2.45vw);
-    margin-left: 10px;
+    
+    margin-left: 0.25vw;
     border-radius: 12px;
     background-color: #C83B1B;
     color: white;
+  
 }
 .button2{
 
     margin-top: 15px;
-    width: 100px;
-
+    width: 5vw;
 }
+
+
 .box1{
     background-color: black;
 }
