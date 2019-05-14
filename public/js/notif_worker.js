@@ -58,6 +58,7 @@ function genNotif(event) {
 self.addEventListener("push", event => {
     //console.log(event);
     event.waitUntil(genNotif(event));
+
 });
 
 self.onnotificationclick = async function(event) {

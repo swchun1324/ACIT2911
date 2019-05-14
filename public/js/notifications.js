@@ -110,10 +110,9 @@ async function closePushSubscription() {
 //closePushSubscription();
 openPushSubscription();
 
-/*
-if (Notification.permission !== "denied") {
-    Notification.requestPermission().then(function(result) {
-        console.log(result);
-    });
-}
-*/
+
+// if (Notification.permission !== "denied") {
+//     Notification.requestPermission().then(function(result) {
+//         console.log(result);
+//     });
+// }
