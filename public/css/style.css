@@ -154,6 +154,9 @@ input[type="password"]:focus {
     font-style: italic;
 }
 
+.form-group1{
+    margin-bottom: 15px;
+}
 /* ------------------------------------------- NEW POST PAGE ------------------------------------------- */
 
 .post_text {
@@ -261,10 +264,18 @@ a {
     padding: 15px;
 }
 
+
+.delete2, #edit_button{
+    background-color: #333;
+    border-color: #333;
+    border: none;
+    color: white;
+    margin-top: 15px;
+}
+
 .delete2{
     width: 60px;
-    background-color: #C83B1B;
-    color: white;
+    
     border-radius: 12px;
    
 }
@@ -281,11 +292,13 @@ a {
     flex: 1;
 }
 #edit_button{
-    
+    background-color: #333;
+    border-color: #333;
+    border: none;
+    color: white;
     margin-left: 0.25vw;
     border-radius: 12px;
-    background-color: #C83B1B;
-    color: white;
+ 
   
 }
 .button2{
@@ -295,9 +308,7 @@ a {
 }
 
 
-.box1{
-    background-color: black;
-}
+
 /* ------------------------------------------- USER PROFILE ------------------------------------------- */
 .dm_button {
     -webkit-appearance: button;
