@@ -41,36 +41,13 @@ li a:hover:not(.active) {
     padding: 5px;
     max-height: 32px;
 }
-/* *************** Inbox CSS *************** */
+
 .inbox_icon {
-    width: 28px;
-    height: auto;
+    max-height: 28px;
 }
 
 .inbox {
     padding: 7px;
-}
-.notification{
-    padding: 7px;
-    background-color: transparent;
-    color: white;
-    text-decoration: none;
-    padding: 7px auto;
-    position: relative;
-    display: inline-block;
-}
-.notification img{
-    width: 28px;
-    height: auto;
-}
-.notification .badge {
-  position: absolute;
-  padding: 0px 5px;
-  border-radius: 50%;
-  background-color: transparent;
-  color: black;
-  top: 15px;
-  right: 10px;
 }
 
 .container-1 {
@@ -154,9 +131,6 @@ input[type="password"]:focus {
     font-style: italic;
 }
 
-.form-group1{
-    margin-bottom: 15px;
-}
 /* ------------------------------------------- NEW POST PAGE ------------------------------------------- */
 
 .post_text {
@@ -232,12 +206,6 @@ a {
 }
 
 /* ------------------------------------------- THREAD PAGE ------------------------------------------- */
-.small{
-    font-size: 15px;
-
-}
-
-
 #thread_container {
     width: 80%;
     margin: auto;
@@ -246,7 +214,7 @@ a {
 
 #replies_container {
     width: 95%;
-    margin-top: 15px;
+    margin: auto 0 auto auto;
 }
 
 #replies_container ul {
@@ -263,52 +231,6 @@ a {
     width: 97%;
     padding: 15px;
 }
-
-
-.delete2, #edit_button{
-    background-color: #333;
-    border-color: #333;
-    border: none;
-    color: white;
-    margin-top: 15px;
-}
-
-.delete2{
-    width: 60px;
-    
-    border-radius: 12px;
-   
-}
-
-.padding2{
-    display: flex;
-}
-
-.box1{
-    flex: 0 0 65%;
-}
-
-.box2{
-    flex: 1;
-}
-#edit_button{
-    background-color: #333;
-    border-color: #333;
-    border: none;
-    color: white;
-    margin-left: 0.25vw;
-    border-radius: 12px;
-  
-    color: white;
-  
-}
-.button2{
-
-    margin-top: 15px;
-    width: 5vw;
-}
-
-
 
 /* ------------------------------------------- USER PROFILE ------------------------------------------- */
 .dm_button {
