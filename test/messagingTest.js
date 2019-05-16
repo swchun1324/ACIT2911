@@ -45,6 +45,6 @@ describe("add_dm", function() {
             .catch(err => {
                 throw err;
             });
-        agent.close();
+        close();
     });
 });
