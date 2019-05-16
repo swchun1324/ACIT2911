@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{> header}}
+
+<body>
+    <div id="dm_message_container">
+        <h1>{{heading}}</h1>
+
+        <ul class="dm_list">
+            {{#each dms}}
+            <li>
+                <b>{{sender_username}}: </b>{{message_body}}
+                <p class="dm_send_date">{{send_date}}</p>
+                <hr>
+            </li>
+            {{/each}}
+
+            <form method="post" action="/reply_dm">
+                <div class="form_container">
+                    <input type="hidden" name="recipient_id" value={{dmers_id}}>
+                    <textarea name="message_body" rows="10" cols="100" placeholder="Send a reply!" required></textarea>
+                    <br>
+            
+                    <input type="submit" value="Send">
+                </div>
+            </form>
+        </ul>
+    </div>
+    
+</body>
+
+</html>

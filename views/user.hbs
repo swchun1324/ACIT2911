@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+    {{> header}}
+    
+
+    <body>
+        <div>
+            <div>
+                {{> menu}}
+            </div>
+            <div style="display: flex">
+                <div style="display: inline-block; width:15vw"></div>
+                <div style="display: flex; flex-direction:column; width:70vw">
+                    <div style="display: flex; justify-content:space-between;">
+                        <div
+                            style="display: flex; align-items:flex-end; font-size:3em; font-weight: bold; margin-top: 0.33em;">
+                            {{heading}}</div>
+                        <form style="display: flex; align-items:flex-end; margin-bottom: 0.33em;">
+                            <button class="button" type="submit"
+                                style="display: inline; text-align:center; height:2em; color: white"
+                                formaction="/new_dm/{{user_id}}" id="dm_button">Send
+                                Message</button>
+                        </form>
+                    </div>
+                    <div class="lineSpacer"></div>
+
+                    <div>
+                        <div
+                            style="display: flex; align-items:flex-end; font-size:1.5em; margin-top: 0.67em; margin-bottom:0.33em">
+                            Post History</div>
+                        <form style="background-color: lightgrey; border-radius:4px; max-height:45vh; overflow-y:auto; display:block"
+                            id='user_threads'>
+                            {{#each thread}}
+                                <button class="threadButton" formaction="/thread/{{_id}}">
+                                    <div>
+                                        {{title}}
+                                    </div>
+                                    <div>
+                                        Posted {{date}}
+                                    </div>
+                                    <div class="lineSpacer"></div>
+                            {{/each}}
+                        </form>
+                    </div>
+
+                    <div style="display: flex, justify-content: flex-start; height:2vh; margin-top: 0.33em; margin-bottom:1.5em">
+                        <span style="font-size:1.5em;">Email:</span>
+                        <span style="font-size:1em">{{email}}</span>
+                    </div>
+                    <div style="height:0.5em"> </div>
+
+                    {{#if displaySettings}}
+                        <div>
+                            {{> user_settings}}
+                        </div>
+                    {{/if}}
+
+                </div>
+                <div style="display: inline-block; width:15vw"></div>
+            </div>
+
+            {{> footer}}
+
+
+        </div>
+    </body>
+
+
+    <script src="/js/script.js"></script>
+
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{> header}}
+
+<body>
+    {{> menu}}
+
+    <div id="dm_view_container">        
+        <h1>{{heading}}</h1>
+        
+        <div id="dm_username_list">
+            <ul class="dm_list">
+                {{#each dm_users}}
+                <li>
+                    <a href="/dms/{{id}}" target="dm_messages">{{username}}</a>
+                    <hr>
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        
+        <div id="dm_message_list">
+            <iframe src="about:blank" name="dm_messages" id="dm_messages"></iframe>
+        </div>
+    </div>
+
+</body>
+
+{{> footer}}
+
+
+</html>

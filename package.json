@@ -4,7 +4,7 @@
   "description": "ACIT2520_Assignment3",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node server.js"
   },
   "repository": {
@@ -18,15 +18,25 @@
   },
   "homepage": "https://github.com/cat-box/2019NodeJS_A3#readme",
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
+    "chai": "^4.2.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
-    "hbs": "^4.0.3",
-    "mongodb": "^3.2.2",
+    "hbs": "^4.0.4",
+    "https": "^1.0.0",
+    "mocha": "^6.1.4",
+    "mongodb": "^3.2.3",
+    "node-fetch": "^2.5.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "path": "^0.12.7",
     "request": "^2.88.0",
     "sweetalert": "^2.1.2",
-    "sweetalert2": "^8.8.1"
+    "sweetalert2": "^8.8.1",
+    "web-push": "^3.3.3"
+  },
+  "devDependencies": {
+    "chai-http": "^4.3.0"
   }
 }

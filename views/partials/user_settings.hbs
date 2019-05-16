@@ -1,0 +1,32 @@
+<div>
+    <div style="display:flex; height:2vh; align-items:flex-end; justify-content:space-between; margin-bottom:0.33em">
+        <div style="font-size:1.5em;">Settings</div>
+        <button class="button" style="height:2em" type="submit" id="submit" form="settings">Confirm Settings</button>
+
+    </div>
+    <div class="lineSpacer"></div>
+
+    <form style="display:flex; justify-content:flex-start; padding-top: 0.33em" name="settings" id="settings"
+        action="/updateUser" method="POST">
+        
+        <div style="display:flex; flex-direction:column; width:50%">
+            <div style="font-size:1.2em">Privacy</div>
+            <div>
+                <input type="checkbox" name="showEmail" id="showEmail" {{{setChecked userSettings.showEmail}}}
+                    value=1><label for="showEmail">Show email</label>
+            </div>
+            <div>
+                <input type="checkbox" name="showName" id="showName" {{{setChecked userSettings.showName}}}
+                    value=1><label for="showName">Show name</label>
+            </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; width:50%">
+            <div style="font-size:1.2em">Notifications</div>
+            <div>
+                <input type="checkbox" name="enableNotifs" id="enableNotifs" {{{setChecked userSettings.enableNotifs}}}
+                    value=1><label for="enableNotifs">Enable notifications</label>
+            </div>
+        </div>
+    </form>
+</div>

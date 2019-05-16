@@ -11,6 +11,7 @@ router.post('/add_post', add_post);
 router.post('/add_reply', add_reply);
 router.post('/delete_post', delete_post);
 router.post('/edit_post', edit_post);
+router.get('/update_subscription', subscribe);
 
 function get_date() {
     var date = new Date();
@@ -30,6 +31,7 @@ function add_post(request, response) {
     var title = request.body.title;
     var message = request.body.message;
     var username = request.user.username;
+    var user_id = request.user._id;
 
     var db = utils.getDb();
 
@@ -37,6 +39,7 @@ function add_post(request, response) {
         title: title,
         message: message,
         username: username,
+        user_id: user_id,
         type: 'thread',
         date: get_date(),
         thread_id: null
@@ -44,9 +47,29 @@ function add_post(request, response) {
         if (err) {
             response.send('Unable to post message');
         }
-        response.redirect('/');
+
+        var thread_id = result.ops[0]._id;
+
+        response.redirect(`/update_subscription?thread=${thread_id}`);
     });
 }
+
+function subscribe(request, response) {
+    var db = utils.getDb();
+
+    var query = { _id: request.user._id };
+    var update = { $push: 
+        { subscribed_threads: request.query.thread }
+    };
+
+    db.collection('users').findOneAndUpdate(query, update).then((err, result) => {
+        if (err) {
+            response.send('Unable to update subscriptions');
+        }
+    });
+    response.redirect('/');
+}
+
 
 function edit_post(request, response) {
     var thread_id = request.body.id;
