@@ -4,6 +4,15 @@ const promises = require("./promises");
 const fetch = require("node-fetch");
 const webpush = require("web-push");
 
+const vapidKeys = {
+    publicKey:
+        "BKyb0KGvc8HKy4A-RDJJ0_tZKUiXMlVcmBBhYSEz9U08Nc0xAuvA6uWv7ANEyJm6o0voRItkHhz5y0X0bEAw4Wo",
+    privateKey: "LUZkyfprh3w6EHFNL9RrTLCAjLNp7rnnGbj--h_JsWc"
+};
+
+//var subEndpoint = "https://quiet-brook-91223.herokuapp.com/api/getsubscribe"
+var subEndpoint = "http://localhost:8080/api/getsubscribe";
+
 // formats replies notifications
 async function formatNotif(change) {
     if (change.ns.coll === "messages") {
@@ -22,9 +31,7 @@ async function formatNotif(change) {
         };
         //console.log(JSON.stringify(payload));
 
-        let pushSubscription = await fetch(
-            "https://quiet-brook-91223.herokuapp.com/api/getsubscribe"
-        ).then(response => {
+        let pushSubscription = await fetch(subEndpoint).then(response => {
             return response.json();
         });
         //console.log(pushSubscription.body);
@@ -32,7 +39,7 @@ async function formatNotif(change) {
         let notification = {
             pushSubscription: pushSubscription.body.subscription,
             payload: JSON.stringify(payload),
-            options: pushSubscription.body.vapidKeys
+            options: vapidKeys
         };
         //console.log(notification)
 
@@ -57,8 +64,8 @@ async function openStream(user_id) {
                         "fullDocument.thread_id": {
                             $in: user.subscribed_threads
                         }
-                    },
-                    { "fullDocument.username": { $ne: user.username } }
+                    } //,
+                    //{ "fullDocument.username": { $ne: user.username } }
                 ]
             }
         }
@@ -116,8 +123,8 @@ async function closeStream(user_id) {
                         "fullDocument.thread_id": {
                             $in: user.subscribed_threads
                         }
-                    },
-                    { "fullDocument.username": { $ne: user.username } }
+                    } //,
+                    //{ "fullDocument.username": { $ne: user.username } }
                 ]
             }
         }
@@ -125,23 +132,23 @@ async function closeStream(user_id) {
     thread_changeStream.close();
 }
 
-
 async function dm_formatNotif(change) {
     if (change.ns.coll === "direct_message") {
-
         let payload = {
-            title: `${change.fullDocument.sender_username} sent you a direct message!`,
+            title: `${
+                change.fullDocument.sender_username
+            } sent you a direct message!`,
             icon: "/images/speech-bubble.png",
-            body: `${change.fullDocument.send_date}\n${change.fullDocument.message_body}`,
+            body: `${change.fullDocument.send_date}\n${
+                change.fullDocument.message_body
+            }`,
             tag: change.fullDocument._id,
             url: `/dms/${change.fullDocument.recipient}`,
             renotify: true
         };
         //console.log(JSON.stringify(payload));
 
-        let pushSubscription = await fetch(
-            "https://quiet-brook-91223.herokuapp.com/api/getsubscribe"
-        ).then(response => {
+        let pushSubscription = await fetch(subEndpoint).then(response => {
             return response.json();
         });
         //console.log(pushSubscription.body);
@@ -149,7 +156,7 @@ async function dm_formatNotif(change) {
         let notification = {
             pushSubscription: pushSubscription.body.subscription,
             payload: JSON.stringify(payload),
-            options: pushSubscription.body.vapidKeys
+            options: vapidKeys
         };
         //console.log(notification)
 
@@ -162,9 +169,11 @@ async function reply_openStream(user_id) {
 
     const collection = db.collection("direct_message");
 
-    var query = [{
-            $match: { "fullDocument.recipient": user_id}
-    }];
+    var query = [
+        {
+            $match: { "fullDocument.recipient": user_id }
+        }
+    ];
 
     const dm_changeStream = collection.watch(query);
 
@@ -176,7 +185,8 @@ async function reply_openStream(user_id) {
         let pushed = await webpush
             .sendNotification(
                 dm_notification.pushSubscription,
-                dm_notification.payload, {
+                dm_notification.payload,
+                {
                     vapidDetails: {
                         subject: "http://quiet-brook-91223.herokuapp.com/",
                         publicKey: dm_notification.options.publicKey,
@@ -193,7 +203,6 @@ async function reply_openStream(user_id) {
         console.log(`Push: ${pushed.statusCode}`);
     });
 }
-
 
 module.exports = {
     open: openStream,

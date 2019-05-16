@@ -41,6 +41,11 @@ li a:hover:not(.active) {
     padding: 5px;
     max-height: 32px;
 }
+
+.hide {
+    display: none;
+}
+
 /* *************** Inbox CSS *************** */
 .inbox_icon {
     width: 28px;
@@ -50,7 +55,7 @@ li a:hover:not(.active) {
 .inbox {
     padding: 7px;
 }
-.notification{
+.notification {
     padding: 7px;
     background-color: transparent;
     color: white;
@@ -59,18 +64,18 @@ li a:hover:not(.active) {
     position: relative;
     display: inline-block;
 }
-.notification img{
+.notification img {
     width: 28px;
     height: auto;
 }
 .notification .badge {
-  position: absolute;
-  padding: 0px 5px;
-  border-radius: 50%;
-  background-color: transparent;
-  color: black;
-  top: 15px;
-  right: 10px;
+    position: absolute;
+    padding: 0px 5px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: black;
+    top: 15px;
+    right: 10px;
 }
 
 .container-1 {
@@ -229,18 +234,16 @@ a {
 }
 
 /* ------------------------------------------- THREAD PAGE ------------------------------------------- */
-.small{
+.small {
     font-size: 15px;
-
 }
 
-.delete2 , #edit_button {
-    display:inline-block;
+.delete2,
+#edit_button {
+    display: inline-block;
     margin-top: 15px;
     width: 100px;
-  
-    
-    }
+}
 #thread_container {
     width: 80%;
     margin: auto;
@@ -267,25 +270,23 @@ a {
     padding: 15px;
 }
 
-.delete2{
+.delete2 {
     width: 80px;
     background-color: #5cb8e6;
     color: white;
     border-radius: 12px;
 }
 
-#edit_button{
+#edit_button {
     border-radius: 12px;
     background-color: #5cb8e6;
     color: white;
 }
-.button2{
-
+.button2 {
     margin-top: 15px;
     width: 100px;
-
 }
-.box1{
+.box1 {
     background-color: black;
 }
 /* ------------------------------------------- USER PROFILE ------------------------------------------- */

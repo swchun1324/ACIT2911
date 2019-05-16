@@ -1,6 +1,6 @@
 const port = process.env.PORT || 8080;
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -36,11 +36,11 @@ var server = app.listen(port, () => {
     utils.init();
 });
 
-
 const vapidKeys = {
-    publicKey: "BKyb0KGvc8HKy4A-RDJJ0_tZKUiXMlVcmBBhYSEz9U08Nc0xAuvA6uWv7ANEyJm6o0voRItkHhz5y0X0bEAw4Wo",
+    publicKey:
+        "BKyb0KGvc8HKy4A-RDJJ0_tZKUiXMlVcmBBhYSEz9U08Nc0xAuvA6uWv7ANEyJm6o0voRItkHhz5y0X0bEAw4Wo",
     privateKey: "LUZkyfprh3w6EHFNL9RrTLCAjLNp7rnnGbj--h_JsWc"
-}
+};
 app.locals.clientVapidKey = vapidKeys.publicKey;
 //console.log(app.locals.clientVapidKey);
 
@@ -360,38 +360,38 @@ app.get("/api/vapidPublicKey", (request, response) => {
     response.send({ key: app.locals.clientVapidKey });
 });
 
-app.post("/api/push", checkAuthentication, async (request, response) => {
-    console.log(request);
-    let title = request.body.notification.title;
-    let icon = "/images/reply.png";
-    let body = request.body.notification.body;
-    let url = request.body.notification.url;
+// app.post("/api/push", checkAuthentication, async (request, response) => {
+//     console.log(request);
+//     let title = request.body.notification.title;
+//     let icon = "/images/reply.png";
+//     let body = request.body.notification.body;
+//     let url = request.body.notification.url;
 
-    let payload = {
-        title,
-        icon,
-        body,
-        url
-    };
+//     let payload = {
+//         title,
+//         icon,
+//         body,
+//         url
+//     };
 
-    let pushed = await webpush.sendNotification(
-        app.locals.pushSubscription,
-        payload
-    );
+//     let pushed = await webpush.sendNotification(
+//         app.locals.pushSubscription,
+//         payload
+//     );
 
-    response.send({
-        status: pushed.statusCode,
-        body: pushed.body
-    });
-});
+//     response.send({
+//         status: pushed.statusCode,
+//         body: pushed.body
+//     });
+// });
 
 app.get("/api/getsubscribe", (request, response) => {
     //console.log(request)
     let subscription = app.locals.pushSubscription;
-    console.log(subscription);
+    //console.log(subscription);
     response.send({
         status: 200,
-        body: { subscription, vapidKeys }
+        body: { subscription }
     });
 });
 
@@ -402,9 +402,14 @@ app.post("/api/pushsubscribe", checkAuthentication, (request, response) => {
     response.send({ status: 200 });
 });
 
-app.get('/.well-known/acme-challenge/T7witKO1ya0tj4N4NTpv5XSfC_sigKZUKJcP0-nJ6bk', (req, res) => {
-    res.send('T7witKO1ya0tj4N4NTpv5XSfC_sigKZUKJcP0-nJ6bk.vUhz1OwQfK7SYm1ZIxqBsXDz_e9FYFeaaiaDPTv8tIw');
-});
+app.get(
+    "/.well-known/acme-challenge/T7witKO1ya0tj4N4NTpv5XSfC_sigKZUKJcP0-nJ6bk",
+    (req, res) => {
+        res.send(
+            "T7witKO1ya0tj4N4NTpv5XSfC_sigKZUKJcP0-nJ6bk.vUhz1OwQfK7SYm1ZIxqBsXDz_e9FYFeaaiaDPTv8tIw"
+        );
+    }
+);
 
 exports.closeServer = function() {
     server.close();

@@ -122,14 +122,19 @@ async function updateNotifCount() {
     if (document.getElementById("notifCount") !== null) {
         document.getElementById("notifCount").innerHTML =
             window.sessionStorage.length;
+    } else {
+        window.sessionStorage.clear();
     }
+}
+
+async function toggleNotif() {
+    document.getElementById("notifs").classList.toggle("hide");
 }
 
 //closePushSubscription();
 openPushSubscription();
 openMessageListener();
 updateNotifCount();
-
 
 if (Notification.permission !== "denied") {
     Notification.requestPermission().then(function(result) {

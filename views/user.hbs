@@ -3,7 +3,7 @@
 
 
     {{> header}}
-    
+
 
     <body>
         <div>
@@ -17,12 +17,15 @@
                         <div
                             style="display: flex; align-items:flex-end; font-size:3em; font-weight: bold; margin-top: 0.33em;">
                             {{heading}}</div>
+                        
+                        {{#unless displaySettings}}
                         <form style="display: flex; align-items:flex-end; margin-bottom: 0.33em;">
                             <button class="button" type="submit"
                                 style="display: inline; text-align:center; height:2em; color: white"
                                 formaction="/new_dm/{{user_id}}" id="dm_button">Send
                                 Message</button>
                         </form>
+                        {{/unless}}
                     </div>
                     <div class="lineSpacer"></div>
 
@@ -30,7 +33,8 @@
                         <div
                             style="display: flex; align-items:flex-end; font-size:1.5em; margin-top: 0.67em; margin-bottom:0.33em">
                             Post History</div>
-                        <form style="background-color: lightgrey; border-radius:4px; max-height:45vh; overflow-y:auto; display:block"
+                        <form
+                            style="background-color: lightgrey; border-radius:4px; max-height:45vh; overflow-y:auto; display:block"
                             id='user_threads'>
                             {{#each thread}}
                                 <button class="threadButton" formaction="/thread/{{_id}}">
@@ -45,7 +49,8 @@
                         </form>
                     </div>
 
-                    <div style="display: flex, justify-content: flex-start; height:2vh; margin-top: 0.33em; margin-bottom:1.5em">
+                    <div
+                        style="display: flex, justify-content: flex-start; height:2vh; margin-top: 0.33em; margin-bottom:1.5em">
                         <span style="font-size:1.5em;">Email:</span>
                         <span style="font-size:1em">{{email}}</span>
                     </div>
