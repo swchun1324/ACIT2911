@@ -231,6 +231,8 @@ a {
 /* ------------------------------------------- THREAD PAGE ------------------------------------------- */
 .small{
     font-size: 15px;
+    margin-bottom: 15px;
+    display:flex
 
 }
 
@@ -278,6 +280,7 @@ a {
     border-radius: 12px;
     background-color: #5cb8e6;
     color: white;
+    margin-left: 10px;
 }
 .button2{
 
@@ -285,8 +288,34 @@ a {
     width: 100px;
 
 }
+
+.padding2{
+    display: flex;
+}
+
 .box1{
-    background-color: black;
+    flex: 1;
+}
+
+.box2{
+    flex: 0 0 60%;
+}
+
+.star_button{
+
+    background-color: transparent; 
+    background-color: #5cb8e6;
+    display: flex;
+    width: 80px;
+    border-radius: 12px;
+   
+    cursor: pointer;       
+ 
+    justify-content: center;
+    color: white;
+    vertical-align: middle;
+    
+    margin-left: 15px;
 }
 /* ------------------------------------------- USER PROFILE ------------------------------------------- */
 .dm_button {
