@@ -23,7 +23,7 @@ async function formatNotif(change) {
         //console.log(JSON.stringify(payload));
 
         let pushSubscription = await fetch(
-            "https://localhost:8080/api/getsubscribe"
+            "https://quiet-brook-91223.herokuapp.com/api/getsubscribe"
         ).then(response => {
             return response.json();
         });
@@ -57,9 +57,8 @@ async function openStream(user_id) {
                         "fullDocument.thread_id": {
                             $in: user.subscribed_threads
                         }
-                    } //,
-                    //{ "fullDocument.username": { $ne: user.username } }
-                    // TODO: Uncomment
+                    },
+                    { "fullDocument.username": { $ne: user.username } }
                 ]
             }
         }
@@ -117,8 +116,8 @@ async function closeStream(user_id) {
                         "fullDocument.thread_id": {
                             $in: user.subscribed_threads
                         }
-                    } //,
-                    //{ "fullDocument.username": { $ne: user.username } }
+                    },
+                    { "fullDocument.username": { $ne: user.username } }
                 ]
             }
         }
@@ -141,7 +140,7 @@ async function dm_formatNotif(change) {
         //console.log(JSON.stringify(payload));
 
         let pushSubscription = await fetch(
-            "https://localhost:8080/api/getsubscribe"
+            "https://quiet-brook-91223.herokuapp.com/api/getsubscribe"
         ).then(response => {
             return response.json();
         });
