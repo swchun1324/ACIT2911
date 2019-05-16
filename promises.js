@@ -12,7 +12,7 @@ var messagePromise = () => {
                 {
                     type: "thread"
                 },
-                {
+                {         
                     _id: 0
                 }
             )
