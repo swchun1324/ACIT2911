@@ -118,18 +118,53 @@ async function openMessageListener() {
     });
 }
 
+
 async function updateNotifCount() {
     if (document.getElementById("notifCount") !== null) {
-        document.getElementById("notifCount").innerHTML =
-            window.sessionStorage.length;
+        let notifications = window.sessionStorage;
+        document.getElementById("notifCount").innerHTML = notifications.length;
+
+        var notifContent = Object.entries(notifications);
+        var notif = "";
+
+        for (i=0; i<notifications.length; i++) {
+            var session = JSON.parse(notifContent[i][1]);
+
+            icon = session.icon;
+            content = session.body;
+            link = session.url;
+
+            text = `<li><a href="${link}"><p><img src=${icon}>${content}</p></a></li>`;
+
+            notif += text;
+        }
+
+        document.getElementById("notif_list").innerHTML = notif;
+    } else {
+        window.sessionStorage.clear();
     }
 }
+
+async function toggleNotif() {
+    document.getElementById("notifs").classList.toggle("hide");
+    document.getElementById("notifications").classList.toggle("active");
+}
+
+var ignore = document.getElementById('notifs');
+
+document.onclick = function closeNotif(event) {
+    var target = event.target || event.srcElement;
+    if (target.id === 'notifs' || ignore.contains(target) || target.id === 'notifCount' || target.id === 'notifDropdown' || target.id === 'notifImg') {
+        return;
+    }
+    document.getElementById("notifs").classList.add("hide");
+    document.getElementById("notifications").classList.remove("active");
+};
 
 //closePushSubscription();
 openPushSubscription();
 openMessageListener();
 updateNotifCount();
-
 
 if (Notification.permission !== "denied") {
     Notification.requestPermission().then(function(result) {

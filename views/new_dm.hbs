@@ -6,20 +6,27 @@
 <body>
     {{> menu}}
 
-    <form method="post" action="/add_dm">
-        <div class="form_container">
-            <h1>{{heading}}</h1>
+    <div>
+        <a href="/user/{{recipient_id}}" class="width"><button class="button">Return to {{username}}'s profile</button></a>
+        
+        <form method="post" action="/add_dm">
+            <div class="form_container">
+        
+                <h1>{{heading}}</h1>
 
-            <input type="hidden" name="recipient_id" value={{recipient_id}}
+                <hr>
+        
+                <input type="hidden" name="recipient_id" value={{recipient_id}} <label
+                    for="message_body"><b>Message</b></label><br>
+                <textarea name="message_body" rows="10" cols="50" placeholder="Send a message!" required></textarea>
+                <br>
+        
+                <input type="submit" value="Send">
+            </div>
+        </form>
+    </div>
 
-            <label for="message_body"><b>Message</b></label><br>
-            <textarea name="message_body" rows="10" cols="50" placeholder="Send a message!"
-                required></textarea>
-            <br>
-
-            <input type="submit" value="Send">
-        </div>
-    </form>
+    
 </body>
 
 {{> footer}}

@@ -70,16 +70,19 @@ self.addEventListener("push", async event => {
 
     if (allClients[0].focused) {
         console.log("Storing notif");
+
         let data = event.data.json();
         let message = JSON.stringify({
             icon: data.icon,
             body: data.title,
             url: data.url
         });
-        console.log(data.tag, message);
-        console.log(allClients[0]);
+        //console.log(data.tag, message);
+        //console.log(allClients[0]);
+
         allClients[0].postMessage({ tag: data.tag, message: message });
-        genNotif(event)
+    } else {
+        genNotif(event);
     }
 });
 
