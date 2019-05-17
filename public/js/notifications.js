@@ -111,20 +111,19 @@ async function closePushSubscription() {
 }
 
 async function openMessageListener() {
-    console.log("Opening listener");
-    navigator.serviceWorker.addEventListener("message", event => {
+    navigator.serviceWorker.addEventListener("message", async event => {
         console.log("caught!");
         window.sessionStorage.setItem(event.data.tag, event.data.message);
         return updateNotifCount();
     });
 }
 
-// TODO: fix
+
 async function updateNotifCount() {
     if (document.getElementById("notifCount") !== null) {
-        let count = await idbKeyval.keys();
-        console.log(count.length);
-        document.getElementById("notifCount").innerHTML = count.length;
+        let notifications = window.sessionStorage;
+        document.getElementById("notifCount").innerHTML = notifications.length;
+
         var notifContent = Object.entries(notifications);
         var notif = "";
 
@@ -142,7 +141,7 @@ async function updateNotifCount() {
 
         document.getElementById("notif_list").innerHTML = notif;
     } else {
-        await idbKeyval.clear();
+        window.sessionStorage.clear();
     }
 }
 

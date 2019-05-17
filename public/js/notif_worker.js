@@ -1,11 +1,8 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable indent */
 /* eslint-disable quotes */
-importScripts(
-    "https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.js"
-);
 const cacheName = "notifCache";
-const cacheURLS = "/api/notifs";
+const cacheURLS = ["/api/notifs", "/api/getsubscribe"];
 
 self.addEventListener("install", event => {
     // Perform install steps
@@ -15,7 +12,7 @@ self.addEventListener("install", event => {
             .then(cache => {
                 //console.log("Opened cache");
 
-                return cache.add(cacheURLS);
+                return cache.addAll(cacheURLS);
             })
             .then(clients.claim())
             .catch(error => {
@@ -32,10 +29,10 @@ self.addEventListener("fetch", event => {
                 //console.log("Opened cache");
                 await cache.delete(cacheURLS);
                 //console.log(cleared);
-                await cache.add(cacheURLS);
+                await cache.addAll(cacheURLS);
                 let pulled = await cache.match(cacheURLS);
                 if (pulled !== undefined) {
-                    //console.log(pulled);
+                    console.log(pulled);
                 }
             })
         );
@@ -68,23 +65,25 @@ self.addEventListener("push", async event => {
     //console.log(event);
     await clients.claim();
 
-    //let allClients = await clients.matchAll({ type: "window" });
+    let allClients = await clients.matchAll({ type: "window" });
     //console.log(allClients[0].focused);
-    let data = event.data.json();
-    let message = JSON.stringify({
-        icon: data.icon,
-        body: data.title,
-        url: data.url
-    });
 
-    /*
-    for (let client of allClients) {
+    if (allClients[0].focused) {
         console.log("Storing notif");
-        client.postMessage({ tag: data.tag, message: message });
+
+        let data = event.data.json();
+        let message = JSON.stringify({
+            icon: data.icon,
+            body: data.title,
+            url: data.url
+        });
+        //console.log(data.tag, message);
+        //console.log(allClients[0]);
+
+        allClients[0].postMessage({ tag: data.tag, message: message });
+    } else {
+        genNotif(event);
     }
-    */
-    idbKeyval.set(data.tag, message);
-    genNotif(event);
 });
 
 self.onnotificationclick = async function(event) {
