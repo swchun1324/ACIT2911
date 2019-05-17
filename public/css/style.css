@@ -41,6 +41,11 @@ li a:hover:not(.active) {
     padding: 5px;
     max-height: 32px;
 }
+
+.hide {
+    display: none;
+}
+
 /* *************** Inbox CSS *************** */
 .inbox_icon {
     width: 28px;
@@ -50,7 +55,7 @@ li a:hover:not(.active) {
 .inbox {
     padding: 7px;
 }
-.notification{
+.notification {
     padding: 7px;
     background-color: transparent;
     color: white;
@@ -59,18 +64,18 @@ li a:hover:not(.active) {
     position: relative;
     display: inline-block;
 }
-.notification img{
+.notification img {
     width: 28px;
     height: auto;
 }
 .notification .badge {
-  position: absolute;
-  padding: 0px 5px;
-  border-radius: 50%;
-  background-color: transparent;
-  color: black;
-  top: 15px;
-  right: 10px;
+    position: absolute;
+    padding: 0px 5px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: black;
+    top: 16px;
+    right: 13px;
 }
 
 .container-1 {
@@ -83,6 +88,69 @@ li a:hover:not(.active) {
 #search {
     border-radius: 3px;
     padding: 3px;
+}
+
+/* ----------------- Notifications ------------------- */
+
+#notifications {
+    position: relative;
+    overflow: visible;
+    display: inline-block;
+}
+
+#notifications:hover {
+    background-color: #4d99bf;
+}
+
+#notifDropdown:focus {
+    outline: 0;
+}
+
+#notifDropdown {
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+}
+
+#notifs {
+    position: absolute;
+    z-index: 3;
+    border: 1px solid #336680;
+    left: auto;
+    right: 0;
+    width: 350px;
+}
+
+#menuList {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: visible;
+}
+
+#notif_list a {
+    color: white;
+    background-color: #333;
+    text-align: left;
+}
+
+#notif_list a:hover {
+    background-color: rgb(77, 77, 77);
+}
+
+#notif_list img {
+    max-height: 30px;
+    float: left;
+    padding-right: 1.5em;
+}
+
+#notif_list {
+    background-color: #333;
+}
+
+#notif_list li {
+    border-top: 1px solid #5cb8e6;
+    width: 350px;
 }
 
 /* ------------------------------------------- LOGIN PAGE ------------------------------------------- */
@@ -153,9 +221,7 @@ input[type="password"]:focus {
     font-weight: bold;
     font-style: italic;
 }
-.form-group1{
-    margin-bottom: 15px;
-}
+
 /* ------------------------------------------- NEW POST PAGE ------------------------------------------- */
 
 .post_text {
@@ -231,20 +297,16 @@ a {
 }
 
 /* ------------------------------------------- THREAD PAGE ------------------------------------------- */
-.small{
+.small {
     font-size: 15px;
-    margin-bottom: 15px;
-    display:flex
-
 }
 
-.delete2 , #edit_button {
-    display:inline-block;
+.delete2,
+#edit_button {
+    display: inline-block;
     margin-top: 15px;
     width: 100px;
-  
-    
-    }
+}
 #thread_container {
     width: 80%;
     margin: auto;
@@ -271,53 +333,24 @@ a {
     padding: 15px;
 }
 
-.delete2{
+.delete2 {
     width: 80px;
     background-color: #5cb8e6;
     color: white;
     border-radius: 12px;
 }
 
-#edit_button{
+#edit_button {
     border-radius: 12px;
     background-color: #5cb8e6;
     color: white;
-    margin-left: 10px;
 }
-.button2{
-
+.button2 {
     margin-top: 15px;
     width: 100px;
-
 }
-
-.padding2{
-    display: flex;
-}
-
-.box1{
-    flex: 1;
-}
-
-.box2{
-    flex: 0 0 60%;
-}
-
-.star_button{
-
-    background-color: transparent; 
-    background-color: #5cb8e6;
-    display: flex;
-    width: 80px;
-    border-radius: 12px;
-   
-    cursor: pointer;       
- 
-    justify-content: center;
-    color: white;
-    vertical-align: middle;
-    
-    margin-left: 15px;
+.box1 {
+    background-color: black;
 }
 /* ------------------------------------------- USER PROFILE ------------------------------------------- */
 .dm_button {
@@ -326,10 +359,13 @@ a {
     appearance: button;
 
     text-decoration: none;
-    color: initial;
     padding: 0.5em;
     font-size: 0.8em;
+    display: inline;
+    text-align:center;
+    color: white"
 }
+
 
 /* ------------------------------------------- DM PAGE ------------------------------------------- */
 .dm_list {
@@ -441,9 +477,14 @@ form {
     border: none;
     border-radius: 2px;
     color: white;
+    height: 2em;
 }
 
 .button:active {
+    background-color: #5cb8e6;
+}
+
+.button:hover {
     background-color: #5cb8e6;
 }
 
@@ -560,4 +601,14 @@ form {
 
 .content-name-history p {
     border-bottom: 1px solid black;
+}
+
+
+.width {
+    padding-left: 5%;
+    padding-right: 55%;
+    right: 0;
+    padding-top: 2.5%;
+    position: absolute;
+    
 }
