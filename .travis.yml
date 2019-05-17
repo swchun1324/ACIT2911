@@ -1,3 +1,8 @@
 language: node_js
 node_js:
-  - "11.12.0"
+  - "stable"
+env:
+  -NODE_ENV="development"
+
+services:
+  - mongodb
