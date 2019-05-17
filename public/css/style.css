@@ -153,7 +153,9 @@ input[type="password"]:focus {
     font-weight: bold;
     font-style: italic;
 }
-
+.form-group1{
+    margin-bottom: 15px;
+}
 /* ------------------------------------------- NEW POST PAGE ------------------------------------------- */
 
 .post_text {
