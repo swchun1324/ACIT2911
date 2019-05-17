@@ -74,8 +74,8 @@ li a:hover:not(.active) {
     border-radius: 50%;
     background-color: transparent;
     color: black;
-    top: 15px;
-    right: 10px;
+    top: 16px;
+    right: 13px;
 }
 
 .container-1 {
@@ -88,6 +88,69 @@ li a:hover:not(.active) {
 #search {
     border-radius: 3px;
     padding: 3px;
+}
+
+/* ----------------- Notifications ------------------- */
+
+#notifications {
+    position: relative;
+    overflow: visible;
+    display: inline-block;
+}
+
+#notifications:hover {
+    background-color: #4d99bf;
+}
+
+#notifDropdown:focus {
+    outline: 0;
+}
+
+#notifDropdown {
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+}
+
+#notifs {
+    position: absolute;
+    z-index: 3;
+    border: 1px solid #336680;
+    left: auto;
+    right: 0;
+    width: 350px;
+}
+
+#menuList {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: visible;
+}
+
+#notif_list a {
+    color: white;
+    background-color: #333;
+    text-align: left;
+}
+
+#notif_list a:hover {
+    background-color: rgb(77, 77, 77);
+}
+
+#notif_list img {
+    max-height: 30px;
+    float: left;
+    padding-right: 1.5em;
+}
+
+#notif_list {
+    background-color: #333;
+}
+
+#notif_list li {
+    border-top: 1px solid #5cb8e6;
+    width: 350px;
 }
 
 /* ------------------------------------------- LOGIN PAGE ------------------------------------------- */
@@ -296,10 +359,13 @@ a {
     appearance: button;
 
     text-decoration: none;
-    color: initial;
     padding: 0.5em;
     font-size: 0.8em;
+    display: inline;
+    text-align:center;
+    color: white"
 }
+
 
 /* ------------------------------------------- DM PAGE ------------------------------------------- */
 .dm_list {
@@ -411,9 +477,14 @@ form {
     border: none;
     border-radius: 2px;
     color: white;
+    height: 2em;
 }
 
 .button:active {
+    background-color: #5cb8e6;
+}
+
+.button:hover {
     background-color: #5cb8e6;
 }
 
@@ -530,4 +601,14 @@ form {
 
 .content-name-history p {
     border-bottom: 1px solid black;
+}
+
+
+.width {
+    padding-left: 5%;
+    padding-right: 55%;
+    right: 0;
+    padding-top: 2.5%;
+    position: absolute;
+    
 }

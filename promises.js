@@ -127,6 +127,7 @@ var userPromise = param_id => {
     });
 };
 
+// TODO: remove updateUserPromise, no longer need notifications array
 var updateUserPromise = (param_id, item) => {
     return new Promise((resolve, reject) => {
         var db = utils.getDb();

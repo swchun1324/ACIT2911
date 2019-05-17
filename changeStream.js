@@ -10,8 +10,8 @@ const vapidKeys = {
     privateKey: "LUZkyfprh3w6EHFNL9RrTLCAjLNp7rnnGbj--h_JsWc"
 };
 
-//var subEndpoint = "https://quiet-brook-91223.herokuapp.com/api/getsubscribe"
-var subEndpoint = "http://localhost:8080/api/getsubscribe";
+var subEndpoint = "https://quiet-brook-91223.herokuapp.com/api/getsubscribe"
+// var subEndpoint = "http://localhost:8080/api/getsubscribe";
 
 // formats replies notifications
 async function formatNotif(change) {
@@ -19,7 +19,6 @@ async function formatNotif(change) {
         let thread = await promises.threadPromise(
             change.fullDocument.thread_id
         );
-        //console.log(thread)
 
         let payload = {
             title: `${change.fullDocument.username} posted in ${thread.title}`,
@@ -27,8 +26,10 @@ async function formatNotif(change) {
             body: `${change.fullDocument.date}\n${change.fullDocument.message}`,
             tag: change.fullDocument.thread_id,
             url: `/thread/${change.fullDocument.thread_id}`,
-            renotify: false
+            renotify: true
         };
+
+        
         //console.log(JSON.stringify(payload));
 
         let pushSubscription = await fetch(subEndpoint).then(response => {
@@ -143,7 +144,7 @@ async function dm_formatNotif(change) {
                 change.fullDocument.message_body
             }`,
             tag: change.fullDocument._id,
-            url: `/dms/${change.fullDocument.recipient}`,
+            url: `/dms?view=${change.fullDocument.sender}`,
             renotify: true
         };
         //console.log(JSON.stringify(payload));

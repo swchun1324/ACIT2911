@@ -1,5 +1,5 @@
 <div id="menu">
-    <ul style="display: flex; align-items:center; justify-content:space-between">
+    <ul id="menuList">
         <div style="display: flex; align-items:center;">
 
             <li><a href="/" class="home_link"><img src="/images/home.png" alt="home_icon" class="home_icon"></a></li>
@@ -25,16 +25,16 @@
                         <img src="/images/inbox.png" alt="inbox-icon" class="inbox_icon"></a>
                 </li>
 
-                <li class="login" style="position: relative; overflow:auto; display:inline-block">
-                    <button name="notifDropdown" id="notifDropdown" type="button" class="notification"
-                        style="display:inline-block; border:none;" onclick="toggleNotif()">
-                        <img src="/images/notification.png" alt="notification-icon">
+                <li class="login" id="notifications">
+                    <button name="notifDropdown" id="notifDropdown" type="button" class="notification" onclick="toggleNotif()">
+                        <img src="/images/notification.png" alt="notification-icon" id="notifImg">
                         <span class="badge" id="notifCount"></span>
                     </button>
 
-                    <div style="position: absolute; z-index:3; min-width:4em; background-color:black; overflow:auto"
-                        class="hide" id="notifs">
-                        aerhtaetaethartta
+                    <div class="hide" id="notifs">
+                        <ul id="notif_list">
+
+                        </ul>
                     </div>
                 </li>
 
