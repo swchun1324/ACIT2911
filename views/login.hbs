@@ -1,33 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    {{> header}}
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'>
+{{> header}}
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'>
+<body>
+    {{> menu}}
+    
+    <form method="post" action="/login">
+        <div class="form_container">
+            <h1>{{heading}}</h1>
+            <hr>
 
-    <body>
-        {{> menu}}
+            <label for="username"><b>Username or Email</b></label>
+            <input type="text" placeholder="username or email" name="username" required>
 
-        <form method="post" action="/login">
-            <div class="form_container">
-                <h1>{{heading}}</h1>
-                <hr>
+            <label for="password"><b>Password</b></label>
+            <input type="password" name="password" required>
 
-                <label for="username"><b>Username or Email</b></label>
-                <input type="text" placeholder="username or email" name="username" required>
-
-                <label for="password"><b>Password</b></label>
-                <input type="password" name="password" required>
-
-                <div class="form-group1">
-                    <strong>New to program tap? </strong><a href="/registration">   Sign up</a>
-                </div>
-
-                <input type="submit" class="form_button" value="Submit" id="login_button" />
-            </div>
-        </form>
-    </body>
-    <script src="js/script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
-    {{> footer}}
-
+            <input type="submit" class="form_button" value="Submit" id="login_button"/>
+        </div>
+    </form>
+</body>
+<script src="js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+{{> footer}}
 </html>
