@@ -6,24 +6,26 @@
 <body>
     {{> menu}}
     <div id="message_container">
-        <div class="register_add">
+        <form class="register_add"
+            style="display: flex; align-items:flex-end; justify-content:space-between; margin-bottom: 0.66em;">
             <h1>{{heading}}</h1>
             {{#if isAuthenticated}}
-                <p><button><a href="/new_post">Add Post</a></button></p>
+            <button class="button" type="submit" id="addPost" formaction="/new_post">Add Post</button>
             {{else}}
-                <p>
-                    <a href="/registration" class="reg_link">Register a new account to start posting!</a>
-                </p>
+
+            <a href="/registration" class="reg_link">Register a new account to start posting!</a>
+
             {{/if}}
-        </div>
+        </form>
         <hr>
 
         <ul class="message_list">
             {{#each message}}
-                <li><a href="/thread/{{_id}}">{{title}}</a>
-                <p class="poster">Posted by: <a href="/user/{{user_id}}" id="f_username">{{username}}</a> on {{date}}</p>
+            <li><a href="/thread/{{_id}}">{{title}}</a>
+                <p class="poster">Posted by: <a href="/user/{{user_id}}" id="f_username">{{username}}</a> on {{date}}
+                </p>
                 <hr>
-                </li>
+            </li>
             {{/each}}
         </ul>
     </div>

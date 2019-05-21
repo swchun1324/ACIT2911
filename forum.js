@@ -1,17 +1,17 @@
-const express = require('express');
-const utils = require('./utils');
-const pass = require('./passport.js');
+const express = require("express");
+const utils = require("./utils");
+const pass = require("./passport.js");
 
 var router = express.Router();
 
 router.use(pass);
 
 // Add post to the db
-router.post('/add_post', add_post);
-router.post('/add_reply', add_reply);
-router.post('/delete_post', delete_post);
-router.post('/edit_post', edit_post);
-router.get('/update_subscription', subscribe);
+router.post("/add_post", add_post);
+router.post("/add_reply", add_reply);
+router.post("/delete_post", delete_post);
+router.post("/edit_post", edit_post);
+router.get("/update_subscription", subscribe);
 
 function get_date() {
     var date = new Date();
@@ -35,59 +35,67 @@ function add_post(request, response) {
 
     var db = utils.getDb();
 
-    db.collection('messages').insertOne({
-        title: title,
-        message: message,
-        username: username,
-        user_id: user_id,
-        type: 'thread',
-        date: get_date(),
-        thread_id: null
-    }, (err, result) => {
-        if (err) {
-            response.send('Unable to post message');
+    db.collection("messages").insertOne(
+        {
+            title: title,
+            message: message,
+            username: username,
+            user_id: user_id,
+            type: "thread",
+            date: get_date(),
+            thread_id: null
+        },
+        (err, result) => {
+            if (err) {
+                response.send("Unable to post message");
+            }
+
+            var thread_id = result.ops[0]._id;
+
+            response.redirect(`/update_subscription?thread=${thread_id}`);
         }
-
-        var thread_id = result.ops[0]._id;
-
-        response.redirect(`/update_subscription?thread=${thread_id}`);
-    });
+    );
 }
 
 function subscribe(request, response) {
     var db = utils.getDb();
 
     var query = { _id: request.user._id };
-    var update = { $push: 
-        { subscribed_threads: request.query.thread }
-    };
+    var update = { $push: { subscribed_threads: request.query.thread } };
 
-    db.collection('users').findOneAndUpdate(query, update).then((err, result) => {
-        if (err) {
-            response.send('Unable to update subscriptions');
-        }
-    });
-    response.redirect('/');
+    db.collection("users")
+        .findOneAndUpdate(query, update, { returnNewDocument: true })
+        .then(result => {
+            if (result.ok) {
+                return response.redirect("/");
+            } else {
+                console.log(result.lastErrorObject);
+                return response.send("Unable to update subscriptions");
+            }
+        });
 }
-
 
 function edit_post(request, response) {
     var thread_id = request.body.id;
     var edited_message = request.body.edit_textarea;
-    
+
     var db = utils.getDb();
     var ObjectId = utils.getObjectId();
-    
-    db.collection('messages').findOneAndUpdate({
-        _id: new ObjectId(thread_id)
-    }, {
-        $set: {message: edited_message}
-    }, (err, result) => {
-        if (err) {
-            response.send('Unable to edit message');
+
+    db.collection("messages").findOneAndUpdate(
+        {
+            _id: new ObjectId(thread_id)
+        },
+        {
+            $set: { message: edited_message }
+        },
+        (err, result) => {
+            if (err) {
+                response.send("Unable to edit message");
+            }
+            response.redirect("/");
         }
-        response.redirect('/');
-    });
+    );
 }
 
 function delete_post(request, response) {
@@ -97,17 +105,17 @@ function delete_post(request, response) {
     var db = utils.getDb();
     var ObjectId = utils.getObjectId();
 
-    db.collection('messages').deleteMany({
-        $or:[
-            {_id: ObjectId(thread_id)},
-            {thread_id: thread_id}
-        ]
-    }, (err, result) => {
-        if (err) {
-            response.send('Unable to delete message');
+    db.collection("messages").deleteMany(
+        {
+            $or: [{ _id: ObjectId(thread_id) }, { thread_id: thread_id }]
+        },
+        (err, result) => {
+            if (err) {
+                response.send("Unable to delete message");
+            }
+            response.redirect("/");
         }
-        response.redirect('/');
-    });
+    );
 }
 
 function add_reply(request, response) {
@@ -117,18 +125,21 @@ function add_reply(request, response) {
 
     var db = utils.getDb();
 
-    db.collection('messages').insertOne({
-        message: reply,
-        username: username,
-        type: 'reply',
-        date: get_date(),
-        thread_id: thread_id
-    }, (err, result) => {
-        if (err) {
-            response.send('Unable to post message');
+    db.collection("messages").insertOne(
+        {
+            message: reply,
+            username: username,
+            type: "reply",
+            date: get_date(),
+            thread_id: thread_id
+        },
+        (err, result) => {
+            if (err) {
+                response.send("Unable to post message");
+            }
+            response.redirect("/");
         }
-        response.redirect('/');
-    });
+    );
 }
 
 module.exports = router;

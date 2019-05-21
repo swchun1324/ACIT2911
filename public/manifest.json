@@ -1,0 +1,22 @@
+{
+    "short_name": "ProgramTap",
+    "name": "ProgramTap",
+    "icons": [
+        {
+            "src": "/images/logo_smol.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/images/logo_large.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "/",
+    "theme_color": "#111111",
+    "background_color": "#111111",
+    "display": "standalone",
+    "orientation": "portrait",
+    "scope": "/"
+}

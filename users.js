@@ -2,7 +2,7 @@ const express = require("express");
 // const pass = require("./passport.js");
 const utils = require("./utils");
 
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 
@@ -28,9 +28,7 @@ async function saveUser(request, response) {
         .find(query)
         .toArray((err, result) => {
             if (result.length > 0) {
-                setTimeout(function() {
-                    return response.redirect("/registration");
-                }, 2500);
+                return response.redirect("/registration");
             } else if (result.length == 0) {
                 db.collection("users").insertOne(
                     {
@@ -48,6 +46,7 @@ async function saveUser(request, response) {
                     (err, result) => {
                         if (err) {
                             response.send("Unable to register user");
+                            return;
                         }
                         response.redirect("/login");
                     }
@@ -75,7 +74,7 @@ function updateUser(request, response) {
             }
         )
         .then(() => {
-            console.log(request.session);
+            // console.log(request.session);
             response.redirect(`/user/${request.user._id.toString()}`);
         });
 }

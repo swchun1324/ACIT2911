@@ -19,35 +19,36 @@
         <div>
             {{#if isAuthenticated}}
 
-                <li class="login"><a class="active" href="/logout">Logout</a></li>
+            <li class="login"><a class="active" href="/logout">Logout</a></li>
 
-                <li class="login"><a class="inbox" href="/dms">
-                        <img src="/images/inbox.png" alt="inbox-icon" class="inbox_icon"></a>
-                </li>
+            <li class="login"><a class="inbox" href="/dms">
+                    <img src="/images/inbox.png" alt="inbox-icon" class="inbox_icon"></a>
+            </li>
 
-                <li class="login" id="notifications">
-                    <button name="notifDropdown" id="notifDropdown" type="button" class="notification" onclick="toggleNotif()">
-                        <img src="/images/notification.png" alt="notification-icon" id="notifImg">
-                        <span class="badge" id="notifCount"></span>
-                    </button>
+            <li class="login" id="notifications">
+                <button name="notifDropdown" id="notifDropdown" type="button" class="notification"
+                    onclick="toggleNotif()">
+                    <img src="/images/notification.png" alt="notification-icon" id="notifImg">
+                    <span class="badge" id="notifCount"></span>
+                </button>
 
-                    <div class="hide" id="notifs">
-                        <ul id="notif_list">
+                <div class="hide" id="notifs">
+                    <ul id="notif_list">
 
-                        </ul>
-                    </div>
-                </li>
+                    </ul>
+                </div>
+            </li>
 
-                <li class="login">
-                    <a class="username" href="/user/{{user._id}}">Welcome, {{user.username}}</a>
-                </li>
+            <li class="login">
+                <a class="username" href="/user/{{user._id}}">Welcome, {{user.username}}</a>
+            </li>
 
 
             {{else}}
 
-                <li class="login"><a class="active" href="/login">Login</a></li>
+            <li class="login"><a class="active" href="/login">Login</a></li>
 
-                <li class="login"><a href="/registration">Register</a></li>
+            <li class="login"><a href="/registration">Register</a></li>
 
             {{/if}}
         </div>

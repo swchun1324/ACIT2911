@@ -1,8 +1,8 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable indent */
-/* eslint-disable quotes */
+importScripts(
+    "https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.js"
+);
 const cacheName = "notifCache";
-const cacheURLS = ["/api/notifs", "/api/getsubscribe"];
+const cacheURLS = "/api/notifs";
 
 self.addEventListener("install", event => {
     // Perform install steps
@@ -12,13 +12,17 @@ self.addEventListener("install", event => {
             .then(cache => {
                 //console.log("Opened cache");
 
-                return cache.addAll(cacheURLS);
+                return cache.add(cacheURLS);
             })
             .then(clients.claim())
             .catch(error => {
                 return console.log(error);
             })
     );
+});
+
+self.addEventListener("activate", event => {
+    event.waitUntil(clients.claim());
 });
 
 self.addEventListener("fetch", event => {
@@ -29,10 +33,10 @@ self.addEventListener("fetch", event => {
                 //console.log("Opened cache");
                 await cache.delete(cacheURLS);
                 //console.log(cleared);
-                await cache.addAll(cacheURLS);
+                await cache.add(cacheURLS);
                 let pulled = await cache.match(cacheURLS);
                 if (pulled !== undefined) {
-                    console.log(pulled);
+                    //console.log(pulled);
                 }
             })
         );
@@ -44,15 +48,36 @@ function genNotif(event) {
         //console.log(event.data)
         let data = event.data.json();
         //console.log(data);
-        self.registration
-            .showNotification(data.title, {
-                icon: data.icon,
-                body: data.body,
-                data: data.url,
-                tag: data.tag,
-                renotify: data.renotify
-            })
-            .then(resolve);
+        let message = JSON.stringify({
+            icon: data.icon,
+            body: data.title,
+            url: data.url
+        });
+
+        idbKeyval.set(data.tag, message).then(
+            clients
+                .matchAll({
+                    type: "window",
+                    includeUncontrolled: true
+                })
+                .then(allClients => {
+                    for (let client of allClients) {
+                        console.log("Storing notif");
+                        client.postMessage({ tag: data.tag, message: message });
+                    }
+                })
+                .then(
+                    resolve(
+                        self.registration.showNotification(data.title, {
+                            icon: data.icon,
+                            body: data.body,
+                            data: data.url,
+                            tag: data.tag,
+                            renotify: data.renotify
+                        })
+                    )
+                )
+        );
     });
 }
 
@@ -61,38 +86,77 @@ function genNotif(event) {
 //     event.waitUntil(console.log(event));
 // };
 
-self.addEventListener("push", async event => {
-    //console.log(event);
-    await clients.claim();
-
-    let allClients = await clients.matchAll({ type: "window" });
-    //console.log(allClients[0].focused);
-
-    if (allClients[0].focused) {
-        console.log("Storing notif");
-
-        let data = event.data.json();
-        let message = JSON.stringify({
-            icon: data.icon,
-            body: data.title,
-            url: data.url
-        });
-        //console.log(data.tag, message);
-        //console.log(allClients[0]);
-
-        allClients[0].postMessage({ tag: data.tag, message: message });
-    } else {
-        genNotif(event);
-    }
+self.addEventListener("push", event => {
+    event.waitUntil(genNotif(event));
 });
 
-self.onnotificationclick = async function(event) {
-    let url = event.notification.data;
-    console.log("Clicked:", event.notification.tag);
-    event.notification.close();
+/*
+self.addEventListener("push", async event => {
+    // console.log(event);
+    // await clients.claim();
 
-    let allClients = await clients.matchAll({ type: "window" });
-    console.log(allClients[0]);
+    let allClients = await clients.matchAll({
+        type: "window",
+        includeUncontrolled: true
+    });
+    //console.log(allClients[0].focused);
 
-    event.waitUntil(allClients[0].navigate(url));
-};
+    let data = event.data.json();
+    let message = JSON.stringify({
+        icon: data.icon,
+        body: data.title,
+        url: data.url
+    });
+
+    idbKeyval.set(data.tag, message);
+
+    for (let client of allClients) {
+        console.log("Storing notif");
+        client.postMessage({ tag: data.tag, message: message });
+        if (client.visibilityState === "visible") {
+            return;
+        }
+    }
+
+    event.waitUntil(genNotif(event));
+});
+*/
+
+function notifLoad(event) {
+    return new Promise((resolve, reject) => {
+        let url = event.notification.data;
+        if (url === null) {
+            reject("No url!");
+        }
+        console.log("Clicked:", event.notification.tag);
+        event.notification.close();
+        clients
+            .matchAll({
+                type: "window",
+                includeUncontrolled: true
+            })
+            .then(allClients => {
+                if (allClients.length !== 0) {
+                    for (let client of allClients) {
+                        if (client.visibilityState === "visible") {
+                            resolve(
+                                client.navigate(url).then(client => {
+                                    client.focus();
+                                })
+                            );
+                        }
+                    }
+                } else {
+                    resolve(clients.openWindow(url));
+                }
+            });
+    });
+}
+
+self.addEventListener("notificationclick", event => {
+    event.waitUntil(
+        notifLoad(event).catch(error => {
+            console.log(error.message);
+        })
+    );
+});

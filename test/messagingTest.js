@@ -31,7 +31,7 @@ describe("add_dm", function() {
                         message_body: 'test dm'
                     })
                     .then((res) => {
-                        console.log(res);
+                        // console.log(res);
                         var str = res.text;
                         var dm_text = /test dm/i;
                         var result = dm_text.test(str);

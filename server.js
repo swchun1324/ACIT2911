@@ -99,9 +99,25 @@ checkAuthentication_false = (request, response, next) => {
 
 // Login Page
 app.get("/login", (request, response) => {
+    let sessionID = request.sessionID;
+    let sessionData = JSON.parse(request.sessionStore.sessions[sessionID]);
+    var failureFlag = false;
+    var failureMessage = "";
+
+    if (sessionData.flash != undefined) {
+        failureFlag = true;
+        failureMessage = sessionData.flash.error[0];
+
+        delete sessionData["flash"];
+        var deletedError = JSON.stringify(sessionData);
+        request.sessionStore.sessions[sessionID] = deletedError;
+    }
+
     response.render("login.hbs", {
         title: "Login",
-        heading: "Log In"
+        heading: "Log In",
+        failureFlag: failureFlag,
+        failureMessage: failureMessage
     });
 });
 
@@ -112,7 +128,7 @@ app.get("/logout", (request, response) => {
     request.logout();
 
     request.session.destroy(() => {
-        watcher.close(user_id);
+        //watcher.close(user_id);
         response.clearCookie("connect.sid");
         response.redirect("/");
     });
@@ -270,7 +286,6 @@ app.get("/user/:id", async (request, response) => {
 app.get("/new_dm/:id", checkAuthentication, async (request, response) => {
     var user = await promises.userPromise(request.params.id);
 
-
     response.render("new_dm.hbs", {
         title: "Direct Message",
         heading: "Send a direct message",
@@ -375,43 +390,33 @@ app.get("/api/vapidPublicKey", (request, response) => {
     response.send({ key: app.locals.clientVapidKey });
 });
 
-// app.post("/api/push", checkAuthentication, async (request, response) => {
-//     console.log(request);
-//     let title = request.body.notification.title;
-//     let icon = "/images/reply.png";
-//     let body = request.body.notification.body;
-//     let url = request.body.notification.url;
-
-//     let payload = {
-//         title,
-//         icon,
-//         body,
-//         url
-//     };
-
-//     let pushed = await webpush.sendNotification(
-//         app.locals.pushSubscription,
-//         payload
-//     );
-
-//     response.send({
-//         status: pushed.statusCode,
-//         body: pushed.body
-//     });
-// });
-
 app.get("/api/getsubscribe", (request, response) => {
-    //console.log(request)
+    //console.log(request.user)
+
     let subscription = app.locals.pushSubscription;
     //console.log(subscription);
+    let user = {
+        _id: app.locals.user_id,
+        username: app.locals.username,
+        subscribed_threads: app.locals.subscribed_threads
+    };
+
+    //console.log(user);
+
     response.send({
         status: 200,
-        body: { subscription }
+        body: {
+            subscription: subscription,
+            user: user
+        }
     });
 });
 
 app.post("/api/pushsubscribe", checkAuthentication, (request, response) => {
     app.locals.pushSubscription = request.body;
+    app.locals.user_id = request.user._id;
+    app.locals.username = request.user.username;
+    app.locals.subscribed_threads = request.user.subscribed_threads;
     // console.log(app.locals.pushSubscription);
 
     response.send({ status: 200 });

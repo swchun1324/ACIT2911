@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 
-{{> header}}
+    {{> header}}
 
+    {{#if render}}
+
+        <body onload="document.getElementById('{{view}}').click()">
+    {{else}}
+
+        <body>
+
+    {{/if}}
 
 {{#if render}}
 
@@ -15,9 +23,9 @@
 
     {{> menu}}
 
-    <div id="dm_view_container">        
+    <div id="dm_view_container">
         <h1>{{heading}}</h1>
-        
+
         <div id="dm_username_list">
             <ul class="dm_list">
                 {{#each dm_users}}
@@ -28,15 +36,15 @@
                 {{/each}}
             </ul>
         </div>
-        
+
         <div id="dm_message_list">
             <iframe src="about:blank" name="dm_messages" id="dm_messages"></iframe>
         </div>
     </div>
 
-</body>
+    </body>
 
-{{> footer}}
+    {{> footer}}
 
 
 </html>
