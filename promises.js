@@ -161,6 +161,26 @@ var dmPromise = param_id => {
     });
 };
 
+var updateUserPromise = (param_id, endpoint) => {
+    return new Promise((resolve, reject) => {
+        var db = utils.getDb();
+        var ObjectId = utils.getObjectId();
+
+        var query = { _id: ObjectId(param_id) };
+        var update = { $set: 
+            { endpoint: endpoint }
+        };
+
+        db.collection("users").findOneAndUpdate(query, update, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(result);
+        });
+    });
+};
+
+
 module.exports = {
     messagePromise: messagePromise,
     threadPromise: threadPromise,
@@ -168,6 +188,6 @@ module.exports = {
     userPromise: userPromise,
     userthreadPromise: userthreadPromise,
     dmPromise: dmPromise,
-    searchPromise: searchPromise
-    //updateUserPromise: updateUserPromise
+    searchPromise: searchPromise,
+    updateUserPromise: updateUserPromise
 };

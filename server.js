@@ -13,7 +13,6 @@ const pass = require("./passport.js");
 const forum = require("./forum.js");
 const promises = require("./promises.js");
 const dms = require("./messaging.js");
-const watcher = require("./changeStream.js");
 
 const app = express();
 const path = require("path");
@@ -26,29 +25,15 @@ var sslOptions = {
     cert: fs.readFileSync(path.resolve("./localhost.pem"))
 };
 
-// var server = https.createServer(sslOptions, app).listen(port, () => {
-//     console.log(`Server is up on the port ${port}`);
-//     utils.init();
-// });
-
 var server = app.listen(port, () => {
     console.log(`Server is up on the port ${port}`);
     utils.init();
 });
 
-const vapidKeys = {
-    publicKey:
-        "BKyb0KGvc8HKy4A-RDJJ0_tZKUiXMlVcmBBhYSEz9U08Nc0xAuvA6uWv7ANEyJm6o0voRItkHhz5y0X0bEAw4Wo",
-    privateKey: "LUZkyfprh3w6EHFNL9RrTLCAjLNp7rnnGbj--h_JsWc"
-};
-app.locals.clientVapidKey = vapidKeys.publicKey;
-//console.log(app.locals.clientVapidKey);
+const vapidKeys = utils.vapidKeys;
+console.log(vapidKeys);
 
-webpush.setVapidDetails(
-    "http://quiet-brook-91223.herokuapp.com/",
-    vapidKeys.publicKey,
-    vapidKeys.privateKey
-);
+app.locals.clientVapidKey = vapidKeys.publicKey;
 
 hbs.registerPartials(__dirname + "/views/partials");
 
@@ -325,7 +310,6 @@ app.get("/dms", checkAuthentication, async (request, response) => {
     let view = null;
     let render = false;
 
-    //console.log(Object.keys(request.query).length);
     if (Object.keys(request.query).length !== 0) {
         view = request.query.view;
         render = true;
@@ -390,35 +374,11 @@ app.get("/api/vapidPublicKey", (request, response) => {
     response.send({ key: app.locals.clientVapidKey });
 });
 
-app.get("/api/getsubscribe", (request, response) => {
-    //console.log(request.user)
-
-    let subscription = app.locals.pushSubscription;
-    //console.log(subscription);
-    let user = {
-        _id: app.locals.user_id,
-        username: app.locals.username,
-        subscribed_threads: app.locals.subscribed_threads
-    };
-
-    //console.log(user);
-
-    response.send({
-        status: 200,
-        body: {
-            subscription: subscription,
-            user: user
-        }
-    });
-});
-
 app.post("/api/pushsubscribe", checkAuthentication, (request, response) => {
-    app.locals.pushSubscription = request.body;
-    app.locals.user_id = request.user._id;
-    app.locals.username = request.user.username;
-    app.locals.subscribed_threads = request.user.subscribed_threads;
-    // console.log(app.locals.pushSubscription);
+    let user_id = request.user._id;
+    let endpoint = request.body;
 
+    promises.updateUserPromise(user_id, endpoint);
     response.send({ status: 200 });
 });
 

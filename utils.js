@@ -32,19 +32,10 @@ var init = callback => {
     );
 };
 
-//const promises = require("./promises");
-//const request = require("request");
 const fetch = require("node-fetch");
 const webpush = require("web-push");
 
-const vapidKeys = {
-    publicKey:
-        "BKyb0KGvc8HKy4A-RDJJ0_tZKUiXMlVcmBBhYSEz9U08Nc0xAuvA6uWv7ANEyJm6o0voRItkHhz5y0X0bEAw4Wo",
-    privateKey: "LUZkyfprh3w6EHFNL9RrTLCAjLNp7rnnGbj--h_JsWc"
-};
-
-// var subEndpoint = "https://quiet-brook-91223.herokuapp.com/api/getsubscribe"
-var subEndpoint = "http://localhost:8080/api/getsubscribe";
+const vapidKeys = webpush.generateVAPIDKeys();
 
 // formats replies notifications
 async function formatNotif(change, pushSubscription) {
@@ -57,7 +48,7 @@ async function formatNotif(change, pushSubscription) {
         let thread = await getDb()
             .collection("messages")
             .findOne(query);
-        //console.log(thread);
+        console.log(thread);
 
         let payload = {
             title: `${change.fullDocument.username} posted in ${thread.title}`,
@@ -67,19 +58,11 @@ async function formatNotif(change, pushSubscription) {
             url: `/thread/${change.fullDocument.thread_id}`,
             renotify: false
         };
-        //console.log(JSON.stringify(payload));
-
-        // let pushSubscription = await fetch(subEndpoint).then(response => {
-        //     return response.json();
-        // });
-        // console.log(pushSubscription.body);
 
         let notification = {
             pushSubscription: pushSubscription,
-            payload: JSON.stringify(payload),
-            options: vapidKeys
+            payload: JSON.stringify(payload)
         };
-        //console.log(notification)
 
         return notification;
     }
@@ -88,51 +71,30 @@ async function formatNotif(change, pushSubscription) {
 // opens changestream for threads
 async function openStream() {
     var db = getDb();
-
-    //var user = await promises.userPromise(user_id);
-
     const collection = db.collection("messages");
 
     const thread_changeStream = collection.watch([
         {
-            $match: {
-                // $and: [
-                //     { "fullDocument.type": "reply" },
-                //     {
-                //         "fullDocument.thread_id": {
-                //             $in: user.subscribed_threads
-                //         }
-                //     } //,
-                //     //{ "fullDocument.username": { $ne: user.username } }
-                // ]
-                "fullDocument.type": "reply"
-            }
+            $match: { "fullDocument.type": "reply" }
         }
     ]);
 
     thread_changeStream.on("change", async change => {
-        var item = {
-            _id: change.fullDocument._id,
-            thread_id: change.fullDocument.thread_id,
-            message: change.fullDocument.message,
-            read: false
+        var db = getDb();
+        var query = {
+            subscribed_threads: change.fullDocument.thread_id
         };
-        // console.log(change);
 
-        let pushSubscription = await fetch(subEndpoint).then(response => {
-            return response.json();
-        });
-        //console.log(pushSubscription.body);
+        let user_array = await db.collection("users").find(query).toArray();
+        var filtered_user_array = user_array.filter(user => user.username != change.fullDocument.username);
 
-        let user = pushSubscription.body.user;
+        for (var i=0; i<filtered_user_array.length; i++) {
 
-        if (
-            user.subscribed_threads.includes(change.fullDocument.thread_id) &&
-            change.fullDocument.username !== user.username
-        ) {
+            let pushSubscription = filtered_user_array[i].endpoint;
+
             let notification = await formatNotif(
                 change,
-                pushSubscription.body.subscription
+                pushSubscription
             );
 
             let pushed = await webpush
@@ -141,9 +103,9 @@ async function openStream() {
                     notification.payload,
                     {
                         vapidDetails: {
-                            subject: "http://quiet-brook-91223.herokuapp.com/",
-                            publicKey: notification.options.publicKey,
-                            privateKey: notification.options.privateKey
+                            subject: "https://quiet-brook-91223.herokuapp.com/",
+                            publicKey: vapidKeys.publicKey,
+                            privateKey: vapidKeys.privateKey
                         },
                         TTL: 86400
                     }
@@ -155,18 +117,14 @@ async function openStream() {
                 });
 
             console.log(`Push: ${pushed.statusCode}`);
+            console.log(`Username: ${filtered_user_array[i].username}`);
         }
-
-        //await promises.updateUserPromise(user._id, item);
     });
 }
 
 // closes thread stream notifications
 async function closeStream(user_id) {
     var db = getDb();
-
-    //var user = await promises.userPromise(user_id);
-
     const collection = db.collection("messages");
 
     const thread_changeStream = collection.watch([
@@ -178,8 +136,7 @@ async function closeStream(user_id) {
                         "fullDocument.thread_id": {
                             $in: user.subscribed_threads
                         }
-                    } //,
-                    //{ "fullDocument.username": { $ne: user.username } }
+                    } 
                 ]
             }
         }
@@ -201,79 +158,66 @@ async function dm_formatNotif(change, pushSubscription) {
             url: `/dms?view=${change.fullDocument.sender}`,
             renotify: true
         };
-        //console.log(JSON.stringify(payload));
-
-        // let pushSubscription = await fetch(subEndpoint).then(response => {
-        //     return response.json();
-        // });
-        //console.log(pushSubscription.body);
 
         let notification = {
             pushSubscription: pushSubscription,
-            payload: JSON.stringify(payload),
-            options: vapidKeys
+            payload: JSON.stringify(payload)
         };
-        //console.log(notification)
 
         return notification;
     }
 }
 
+// DMs, not reply
 async function reply_openStream() {
     var db = getDb();
 
     const collection = db.collection("direct_message");
 
-    // var query = [
-    //     {
-    //         $match: { "fullDocument.recipient": user_id }
-    //     }
-    // ];
-
     const dm_changeStream = collection.watch();
 
     dm_changeStream.on("change", async change => {
-        // console.log(change);
+        let query = { _id: change.fullDocument.recipient };
 
-        let pushSubscription = await fetch(subEndpoint).then(response => {
-            return response.json();
-        });
+        let recipient = await db.collection("users").findOne(query);
 
-        if (
-            change.fullDocument.recipient.toString() ===
-            pushSubscription.body.user._id
-        ) {
-            let dm_notification = await dm_formatNotif(
-                change,
-                pushSubscription.body.subscription
-            );
+        let pushSubscription = recipient.endpoint;
 
-            let pushed = await webpush
-                .sendNotification(
-                    dm_notification.pushSubscription,
-                    dm_notification.payload,
-                    {
-                        vapidDetails: {
-                            subject: "http://quiet-brook-91223.herokuapp.com/",
-                            publicKey: dm_notification.options.publicKey,
-                            privateKey: dm_notification.options.privateKey
-                        },
-                        TTL: 0
-                    }
-                )
-                .catch(err => {
-                    if (err) {
-                        return err;
-                    }
-                });
+        console.log(pushSubscription);
 
-            console.log(`Push: ${pushed.statusCode}`);
-        }
+        let dm_notification = await dm_formatNotif(
+            change,
+            pushSubscription
+        );
+
+        let pushed = await webpush
+            .sendNotification(
+                dm_notification.pushSubscription,
+                dm_notification.payload,
+                {
+                    vapidDetails: {
+                        subject: "https://quiet-brook-91223.herokuapp.com/",
+                        publicKey: vapidKeys.publicKey,
+                        privateKey: vapidKeys.privateKey
+                    },
+                    TTL: 86400
+                }
+            )
+            .catch(err => {
+                if (err) {
+                    return err;
+                }
+            });
+
+        console.log(`Push: ${pushed.statusCode}`);
+        console.log(`Username: ${recipient.username}`);
+        
     });
 }
 
 module.exports = {
     getDb: getDb,
     getObjectId: getObjectId,
-    init: init
+    init: init,
+    vapidKeys: vapidKeys
 };
